@@ -1,0 +1,29 @@
+image: node:22-bookworm
+stages: [test, build]
+services:
+  - name: postgres:16
+    alias: postgres
+variables:
+  POSTGRES_DB: app_test
+  POSTGRES_USER: app
+  POSTGRES_PASSWORD: app
+  DATABASE_URL: postgresql://app:app@postgres:5432/app_test
+  JWT_SECRET: ci-only-secret-at-least-32-characters-long
+  NODE_ENV: test
+  CORS_ORIGINS: http://localhost:5173
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths: [node_modules/]
+before_script:
+  - npm install --no-audit --no-fund
+  - npx prisma generate
+test:
+  stage: test
+  script:
+    - npm run typecheck
+    - npm run test:unit && npx vitest run tests/account-extension-contract.test.ts
+    - npx prisma migrate deploy
+build:
+  stage: build
+  script:
+    - npm run build
