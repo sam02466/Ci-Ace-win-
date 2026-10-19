@@ -1,4 +1,4 @@
-Name: backend-ci
+name: backend-ci
 on:
   push:
   pull_request:
