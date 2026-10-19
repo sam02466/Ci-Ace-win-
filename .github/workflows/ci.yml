@@ -1,4 +1,4 @@
-name: backend-ci
+Name: backend-ci
 on:
   push:
   pull_request:
@@ -23,13 +23,34 @@ jobs:
       CORS_ORIGINS: http://localhost:5173
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm install --no-audit --no-fund
-      - run: npx prisma generate
-      - run: npm run typecheck
-      - run: npm run test:unit && npx vitest run tests/account-extension-contract.test.ts
-      - run: npx prisma migrate deploy
-      - run: npm run build
+          # Point cache to the correct path inside your subdirectory
+          cache-dependency-path: acebackend-account-extensions/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./acebackend-account-extensions
+        run: npm install --no-audit --no-fund
+
+      - name: Generate Prisma Client
+        working-directory: ./acebackend-account-extensions
+        run: npx prisma generate
+
+      - name: Typecheck
+        working-directory: ./acebackend-account-extensions
+        run: npm run typecheck
+
+      - name: Run Tests
+        working-directory: ./acebackend-account-extensions
+        run: npm run test:unit && npx vitest run tests/account-extension-contract.test.ts
+
+      - name: Migrate Database
+        working-directory: ./acebackend-account-extensions
+        run: npx prisma migrate deploy
+
+      - name: Build
+        working-directory: ./acebackend-account-extensions
+        run: npm run build
