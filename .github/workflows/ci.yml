@@ -26,31 +26,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      # Setup Node WITHOUT caching since the lock file doesn't exist yet
+      - name: List directory contents (Debug step)
+        run: ls -la
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install dependencies (Creates package-lock.json dynamically)
-        working-directory: ./acebackend-account-extensions
+      - name: Install dependencies
+        working-directory: YOUR_EXACT_FOLDER_NAME_HERE
         run: npm install --no-audit --no-fund
 
       - name: Generate Prisma Client
-        working-directory: ./acebackend-account-extensions
+        working-directory: YOUR_EXACT_FOLDER_NAME_HERE
         run: npx prisma generate
 
       - name: Typecheck
-        working-directory: ./acebackend-account-extensions
+        working-directory: YOUR_EXACT_FOLDER_NAME_HERE
         run: npm run typecheck
 
       - name: Migrate Database
-        working-directory: acebackend-account-extensions
+        working-directory: YOUR_EXACT_FOLDER_NAME_HERE
         run: npx prisma migrate deploy
 
       - name: Run Tests
-        working-directory: ./acebackend-account-extensions
+        working-directory: YOUR_EXACT_FOLDER_NAME_HERE
         run: npm run test:unit && npx vitest run tests/account-extension-contract.test.ts
 
       - name: Build
-        working-directory: ./acebackend-account-extensions
+        working-directory: YOUR_EXACT_FOLDER_NAME_HERE
         run: npm run build
