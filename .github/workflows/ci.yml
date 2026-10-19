@@ -44,7 +44,7 @@ jobs:
         run: npm run typecheck
 
       - name: Migrate Database
-        working-directory: ./acebackend-account-extensions
+        working-directory: acebackend-account-extensions
         run: npx prisma migrate deploy
 
       - name: Run Tests
